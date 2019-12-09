@@ -1,4 +1,3 @@
-from django.contrib.auth.models import User, Group
 from .models import (Customer, Group, System,
                         System_yaml, Group_yaml, Customer_yaml)
 from rest_framework import serializers
