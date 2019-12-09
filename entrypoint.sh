@@ -14,10 +14,9 @@ fi
 # python manage.py flush --no-input
 python manage.py migrate
 python manage.py makemigrations
-python manage.py makemigrations django_ipam
+python manage.py makemigrations api
 python manage.py migrate
 python manage.py collectstatic --no-input --clear
 
-exec gunicorn ipam.wsgi:application --access-logfile - --error-logfile - --bind 0.0.0.0:8000 \
+exec gunicorn inventory.wsgi:application --access-logfile - --error-logfile - --bind 0.0.0.0:8000 \
 "$@"
-

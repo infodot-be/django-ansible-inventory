@@ -129,6 +129,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = 'media/'
 
 EMAIL_HOST = '192.168.0.5'
 EMAIL_PORT = 25

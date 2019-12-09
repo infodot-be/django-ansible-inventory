@@ -4,3 +4,5 @@ django-rest-hooks
 django-html-emailer
 django-simple-history
 gunicorn
+babel
+pyyaml
