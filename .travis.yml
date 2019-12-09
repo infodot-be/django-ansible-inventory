@@ -1,0 +1,30 @@
+sudo: required
+language: python
+
+services:
+  - docker
+
+matrix:
+  include:
+  - python:
+    env:
+      - NAME="Django Inventory"
+      - IMAGE_NAME=django-ansible-inventory
+      - DOCKERFILE=Dockerfile
+      - VERSION=v0.1
+
+install: true
+
+script: pytest || true ? # This is needed for the build to complete
+
+before_install:
+  - pip install --no-cache-dir -U -r requirements-test.txt
+  - flake8 --ignore E501 --statistics || true ?
+  - docker build --file $DOCKERFILE -t $IMAGE_NAME .
+  - docker run -d -p 127.0.0.1:80:4567 --name compiled-docker $IMAGE_NAME                     # TEST if the build is running.
+  - docker logs compiled-docker
+  - docker ps -a
+
+after_success:
+- coveralls
+

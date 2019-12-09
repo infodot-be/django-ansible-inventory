@@ -1,0 +1,12 @@
+Django>=2.0,<3.0
+djangorestframework>=3.7,<3.10
+django-rest-hooks
+django-html-emailer
+django-simple-history
+coverage
+coveralls
+babel
+flake8
+bandit
+mysqlclient
+pytest-django
