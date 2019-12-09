@@ -4,7 +4,7 @@ WORKDIR /code
 ADD requirements.txt /code/
 RUN pip install --no-cache-dir -r requirements.txt
 ADD code/ /code/
-RUN mkdir /media
+RUN mkdir media
 
 # outsite port
 EXPOSE 8000
