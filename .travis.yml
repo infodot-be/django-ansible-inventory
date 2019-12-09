@@ -1,5 +1,7 @@
 sudo: required
 language: python
+python:
+  - "3.6"
 
 services:
   - docker
@@ -21,7 +23,7 @@ before_install:
   - pip install --no-cache-dir -U -r requirements-test.txt
   - flake8 --ignore E501 --statistics || true ?
   - docker build --file $DOCKERFILE -t $IMAGE_NAME .
-  - docker run -d -p 127.0.0.1:8000:8000 --name compiled-docker $IMAGE_NAME
+  - docker run -d -p 127.0.0.1:8000:8000 -e SECRET_KEY=123456789 --name compiled-docker $IMAGE_NAME
   - curl http://127.0.0.1:8000/api/ || true ?
   - docker logs compiled-docker
   - docker ps -a
