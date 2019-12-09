@@ -1,6 +1,4 @@
 FROM python:3.6
-RUN curl -sL https://deb.nodesource.com/setup_13.x | bash -
-RUN apt install npm
 RUN mkdir /code
 WORKDIR /code
 ADD requirements.txt /code/
