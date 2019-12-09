@@ -7,7 +7,7 @@ ADD code/ /code
 RUN mkdir media
 COPY entrypoint.sh /code
 
-RUN chmod +x /entrypoint.sh
+RUN chmod +x /code/entrypoint.sh
 
 # outsite port
 EXPOSE 8000
