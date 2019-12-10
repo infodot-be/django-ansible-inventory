@@ -1,12 +1,7 @@
-from django.shortcuts import render, get_object_or_404
-from django.core.exceptions import ValidationError
-from django.http import HttpResponse
-from django.views.decorators.cache import cache_page
-from django.utils.decorators import method_decorator
-from rest_framework import viewsets
+from django.shortcuts import get_object_or_404
+# from django.views.decorators.cache import cache_page
 from .models import Customer, Group, System, System_yaml, Group_yaml, Customer_yaml
 
-import json
 import yaml
 import logging
 
@@ -16,11 +11,9 @@ class Ansible_inventory():
         self.customer = kwargs['customer']
         # self.inventory = {}
         self.group_system = {}
-        self.group_object_list = []
         self.hostvars = {}
-        self.group_list = []
-        self.partial_inventory = {} # this is for the get_inventory_new
-        self.serial_inventory = {} # this is for the get_inventory_new
+        self.partial_inventory = {}
+        self.serial_inventory = {}
         self.meta = {}
         self.ungrouped = []
 
@@ -34,8 +27,8 @@ class Ansible_inventory():
         Process nested group here.
         """
         group_inventory = {}
-        parent_group = get_object_or_404(Group, id = org_group.group_link.id)
-        self.log.debug("org_group.name %s -> parent_group.name %s" % (org_group.name,parent_group.name))
+        parent_group = get_object_or_404(Group, id=org_group.group_link.id)
+        self.log.debug("org_group.name %s -> parent_group.name %s" % (org_group.name, parent_group.name))
         group_inventory[org_group.name] = {}
         try:
             self.group_system[org_group.name].append(system.name)
@@ -52,9 +45,8 @@ class Ansible_inventory():
 
     def _convert_yaml_to_dict(self, yaml_text):
         # data = {'ansible_ssh_user': 'vagrant'}
-        data = yaml.safe_load(yaml_text.rstrip(), Loader=yaml.FullLoader)
+        data = yaml.safe_load(yaml_text.rstrip())
         return data
-
 
     def _get_inventory(self, *args, **kwargs):
         """
@@ -75,7 +67,7 @@ class Ansible_inventory():
             self.partial_inventory['all']['vars'] = self._convert_yaml_to_dict(self.customer.yaml.text.rstrip())
 
         # Locate all systems for the customer
-        for system in System.objects.filter(customer = self.customer).distinct():
+        for system in System.objects.filter(customer=self.customer).distinct():
             # Load Yaml from system and add this to the hostvars.
             self.hostvars[system.name] = dict()
             if system.yaml:
@@ -119,15 +111,14 @@ class Ansible_inventory():
                     self.log.debug("Normal Group %s" % (group.name))
 
                 self.partial_inventory[group.name]['hosts'].append(system.name)
-                self.partial_inventory[group.name]['hosts'] = list(set(self.partial_inventory[group.name]['hosts'])) # Make unique
+                self.partial_inventory[group.name]['hosts'] = list(set(self.partial_inventory[group.name]['hosts']))  # Make unique
                 self.partial_inventory['all']['hosts'].append(system.name)
-                self.partial_inventory['all']['hosts'] = list(set(self.partial_inventory['all']['hosts'])) # make unique
+                self.partial_inventory['all']['hosts'] = list(set(self.partial_inventory['all']['hosts']))  # make unique
 
             if ungrouped:
                 self.ungrouped.append(system.name)
 
         return self.partial_inventory
-
 
     def get_inventory(self, *args, **kwargs):
         self._get_inventory(self, *args, **kwargs)

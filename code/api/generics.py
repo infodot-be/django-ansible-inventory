@@ -12,10 +12,12 @@ from .models import Customer
 # from .serializers import CustomerSerializer, GroupSerializer, SystemSerializer
 from .serializers import CustomerSerializer
 
+
 class ListViewPagination(pagination.PageNumberPagination):
     page_size = 200
     page_size_query_param = 'page_size'
     max_page_size = 10000
+
 
 class BaseYamlDetail(RetrieveAPIView):
     serializer_class = CustomerSerializer
@@ -23,6 +25,7 @@ class BaseYamlDetail(RetrieveAPIView):
     def get(self, request, *args, **kwargs):
         customer = get_object_or_404(Customer, pk=self.kwargs["id"])
         return customer
+
 
 class BaseYamlList(ListCreateAPIView):
     serializer_class = CustomerSerializer

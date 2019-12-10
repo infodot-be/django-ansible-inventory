@@ -13,7 +13,7 @@ matrix:
       - NAME="Django Inventory"
       - IMAGE_NAME=django-ansible-inventory
       - DOCKERFILE=Dockerfile
-      - VERSION=v0.1
+      - VERSION=v0.2
 
 install: true
 
@@ -21,7 +21,7 @@ script: pytest || true ? # This is needed for the build to complete
 
 before_install:
   - pip install --no-cache-dir -U -r requirements-test.txt
-  - flake8 --ignore E501 --statistics || true ?
+  - flake8 --ignore=E501,E722,F401 --exclude=migrations || true ?
   - docker build --file $DOCKERFILE -t $IMAGE_NAME .
   - docker run -d -p 127.0.0.1:8000:8000 -e SECRET_KEY=${SECRET_KEY} --name compiled-docker $IMAGE_NAME
   - sleep 30

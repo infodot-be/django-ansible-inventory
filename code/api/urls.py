@@ -22,7 +22,6 @@ router.register(r'customeryaml', views.CustomerYamlViewSet)
 urlpatterns = [
     url('', include(router.urls)),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-    url('inventory/(?P<pk>[\w-]+)/$', views.YamlDetail.as_view(),name='yaml-detail'),
-    url('inventory/byname/(?P<name>[\w-]+)/$', views.YamlByName.as_view(),name='yaml-list-name'),
-
+    url('inventory/(?P<pk>[\\w-]+)/$', views.YamlDetail.as_view(), name='yaml-detail'),
+    url('inventory/byname/(?P<name>[\\w-]+)/$', views.YamlByName.as_view(), name='yaml-list-name'),
 ]

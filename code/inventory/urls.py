@@ -16,9 +16,12 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from django.conf.urls import url, include
+from web import views
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     url(r'^api/', include('api.urls')),
     url(r'^web/', include('web.urls', namespace='web')),
+    url(r'^$', views.Indexview.as_view(), name='index'),
 ]
