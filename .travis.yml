@@ -32,9 +32,9 @@ before_install:
   - ls -l scripts/inventory.py
   - cat scripts/inventory.py
   - chmod +x scripts/inventory.py
-  - python scripts/inventory.py
-  - ansible-inventory -i scripts/inventory.py --list
-  - curl http://127.0.0.1:8000/api/
+  - python scripts/inventory.py || true ?
+  - ansible-inventory -i scripts/inventory.py --list || true ?
+  - curl http://127.0.0.1:8000/api/ || true ?
   - docker logs compiled-docker
   - docker ps -a
 
