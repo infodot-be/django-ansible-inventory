@@ -8,13 +8,13 @@ from api import views
 These are the auto generated routes by the REST API
 """
 router = routers.DefaultRouter()
-router.register(r'customer', views.CustomerViewSet)
+router.register(r'tenant', views.TenantViewSet)
 router.register(r'group', views.GroupViewSet)
 router.register(r'system', views.SystemViewSet)
 # router.register(r'inventory/byname/(?P<name>[\w-]+)/$', views.YamlByName)
 router.register(r'systemyaml', views.SystemYamlViewSet)
 router.register(r'groupyaml', views.GroupYamlViewSet)
-router.register(r'customeryaml', views.CustomerYamlViewSet)
+router.register(r'tenantyaml', views.TenantYamlViewSet)
 # router.register(r'inventory/(?P<name>[\w-]+)/$', views.YamlByName)
 
 # Wire up our API using automatic URL routing.

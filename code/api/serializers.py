@@ -1,17 +1,17 @@
 
-from .models import (Customer, Group, System,
-                     System_yaml, Group_yaml, Customer_yaml)
+from .models import (Tenant, Group, System,
+                     System_yaml, Group_yaml, Tenant_yaml)
 from rest_framework import serializers
 
 
-class CustomerSerializer(serializers.HyperlinkedModelSerializer):
+class TenantSerializer(serializers.HyperlinkedModelSerializer):
     # url = serializers.HyperlinkedIdentityField(
-    #     view_name='customer-detail',
+    #     view_name='tenant-detail',
     #     lookup_field='id'
     #     )
 
     class Meta:
-        model = Customer
+        model = Tenant
         fields = ['id', 'name', 'yaml', 'url']
         extra_kwargs = {
             'url': {'lookup_field': 'pk'}
@@ -35,7 +35,7 @@ class SystemSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = System
-        fields = ['id', 'name', 'customer', 'group', 'yaml', 'url']
+        fields = ['id', 'name', 'tenant', 'group', 'yaml', 'url']
         extra_kwargs = {
             'url': {'lookup_field': 'pk'}
         }
@@ -57,9 +57,9 @@ class GroupYamlSerializer(serializers.ModelSerializer):
         lookup_field = 'id'
 
 
-class CustomerYamlSerializer(serializers.ModelSerializer):
+class TenantYamlSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = Customer_yaml
+        model = Tenant_yaml
         fields = ('id', 'name', 'url', 'text')
         lookup_field = 'id'

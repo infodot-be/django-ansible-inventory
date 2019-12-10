@@ -11,10 +11,10 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 # from rest_framework.generics import ListAPIView
 from rest_framework import viewsets, generics
-from .models import Customer, Group, System, System_yaml, Group_yaml, Customer_yaml
-# from .serializers import CustomerSerializer, GroupSerializer, SystemSerializer
-from .serializers import (CustomerSerializer, GroupSerializer, SystemSerializer,
-                          SystemYamlSerializer, GroupYamlSerializer, CustomerYamlSerializer)
+from .models import Tenant, Group, System, System_yaml, Group_yaml, Tenant_yaml
+# from .serializers import TenantSerializer, GroupSerializer, SystemSerializer
+from .serializers import (TenantSerializer, GroupSerializer, SystemSerializer,
+                          SystemYamlSerializer, GroupYamlSerializer, TenantYamlSerializer)
 from .generics import BaseYamlDetail, BaseYamlList
 import json
 import yaml
@@ -24,7 +24,7 @@ from .ansible_inventory import Ansible_inventory
 
 class YamlDetail(APIView):
     """
-    List All System from customer by id
+    List All System from tenant by id
     """
     renderer_classes = [JSONRenderer]
 
@@ -35,10 +35,10 @@ class YamlDetail(APIView):
 
     # @method_decorator(cache_page(60*60*2))
     def get(self, *args, **kwargs):
-        customer = self.kwargs['pk']
+        tenant = self.kwargs['pk']
         try:
-            self.customer = get_object_or_404(Customer, id=customer)  # should be changed to group name
-            inst = Ansible_inventory(customer=self.customer)
+            self.tenant = get_object_or_404(Tenant, id=tenant)  # should be changed to group name
+            inst = Ansible_inventory(tenant=self.tenant)
         except ValidationError:
             return HttpResponse(status=201)
 
@@ -47,7 +47,7 @@ class YamlDetail(APIView):
 
 class YamlByName(APIView):
     renderer_classes = [JSONRenderer]
-    queryset = Customer.objects.all().order_by('name')
+    queryset = Tenant.objects.all().order_by('name')
 
     def __init__(self, *args, **kwargs):
         logger = logging.getLogger('YamlByName')
@@ -57,31 +57,31 @@ class YamlByName(APIView):
     # @method_decorator(cache_page(60*60*2))
     # @action(detail=False)
     def get(self, *args, **kwargs):
-        customer = self.kwargs['name']
+        tenant = self.kwargs['name']
         try:
-            self.customer = get_object_or_404(Customer, name=customer)  # should be changed to group name
-            inst = Ansible_inventory(customer=self.customer)
+            self.tenant = get_object_or_404(Tenant, name=tenant)  # should be changed to group name
+            inst = Ansible_inventory(tenant=self.tenant)
         except ValidationError:
             return HttpResponse(status=201)
 
         return Response(inst.get_inventory())
 
 
-class CustomerViewSet(viewsets.ModelViewSet):
+class TenantViewSet(viewsets.ModelViewSet):
     """
-    List All Customers via Generic View
+    List All Tenants via Generic View
     """
-    queryset = Customer.objects.all().order_by('name')
-    serializer_class = CustomerSerializer
+    queryset = Tenant.objects.all().order_by('name')
+    serializer_class = TenantSerializer
 
     @action(detail=False)
     def get_by_name(self, request):
         """
         Get tenant information based on name search
         """
-        customer_name = self.request.query_params.get('name', None)
-        customers = Customer.objects.filter(name=customer_name).order_by('name')
-        serializer = self.get_serializer(customers, many=True)
+        tenant_name = self.request.query_params.get('name', None)
+        tenants = Tenant.objects.filter(name=tenant_name).order_by('name')
+        serializer = self.get_serializer(tenants, many=True)
         return Response(serializer.data)
 
 
@@ -129,23 +129,23 @@ class SystemViewSet(viewsets.ModelViewSet):
         """
         Get system information by id
         """
-        customer = self.request.query_params.get('id', None)
-        # systems = System.objects.filter(customer=customer).order_by('name')
-        systems = System.objects.filter(customer=customer).order_by('name')
+        tenant = self.request.query_params.get('id', None)
+        # systems = System.objects.filter(tenant=tenant).order_by('name')
+        systems = System.objects.filter(tenant=tenant).order_by('name')
         serializer = self.get_serializer(systems, many=True)
         return Response(serializer.data)
 
     @action(detail=False)
-    def get_by_customername(self, request):
+    def get_by_tenantname(self, request):
         """
         Get system information by name groupname
         """
-        customer = self.request.query_params.get('name', None)
+        tenant = self.request.query_params.get('name', None)
         try:
-            customer_id = get_object_or_404(Customer, name=customer)
+            tenant_id = get_object_or_404(Tenant, name=tenant)
         except ValidationError:
             return HttpResponse(status=201)
-        systems = System.objects.filter(customer=customer_id).order_by('name')
+        systems = System.objects.filter(tenant=tenant_id).order_by('name')
         serializer = self.get_serializer(systems, many=True)
         return Response(serializer.data)
 
@@ -160,7 +160,7 @@ class SystemViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
 
-class SystemViewSetByCustomer(viewsets.ModelViewSet):
+class SystemViewSetByTenant(viewsets.ModelViewSet):
     """
     List All Groups via Generic View
     """
@@ -169,12 +169,12 @@ class SystemViewSetByCustomer(viewsets.ModelViewSet):
     serializer_class = SystemSerializer
 
     @action(detail=False)
-    def get_by_customer(self, request):
+    def get_by_tenant(self, request):
         """
         """
-        customer = self.request.query_params.get('name', None)
-        # systems = System.objects.filter(customer=customer).order_by('name')
-        systems = System.objects.filter(customer=customer).order_by('name')
+        tenant = self.request.query_params.get('name', None)
+        # systems = System.objects.filter(tenant=tenant).order_by('name')
+        systems = System.objects.filter(tenant=tenant).order_by('name')
         serializer = self.get_serializer(systems, many=True)
         return Response(serializer.data)
 
@@ -195,9 +195,9 @@ class GroupYamlViewSet(viewsets.ModelViewSet):
     serializer_class = GroupYamlSerializer
 
 
-class CustomerYamlViewSet(viewsets.ModelViewSet):
+class TenantYamlViewSet(viewsets.ModelViewSet):
     """
     List All Group Yaml via Generic View
     """
-    queryset = Customer_yaml.objects.all().order_by('name')
-    serializer_class = CustomerSerializer
+    queryset = Tenant_yaml.objects.all().order_by('name')
+    serializer_class = TenantSerializer

@@ -8,9 +8,9 @@ from rest_framework.generics import (
 )
 from rest_framework.permissions import DjangoModelPermissions
 from rest_framework.response import Response
-from .models import Customer
-# from .serializers import CustomerSerializer, GroupSerializer, SystemSerializer
-from .serializers import CustomerSerializer
+from .models import Tenant
+# from .serializers import TenantSerializer, GroupSerializer, SystemSerializer
+from .serializers import TenantSerializer
 
 
 class ListViewPagination(pagination.PageNumberPagination):
@@ -20,20 +20,20 @@ class ListViewPagination(pagination.PageNumberPagination):
 
 
 class BaseYamlDetail(RetrieveAPIView):
-    serializer_class = CustomerSerializer
+    serializer_class = TenantSerializer
 
     def get(self, request, *args, **kwargs):
-        customer = get_object_or_404(Customer, pk=self.kwargs["id"])
-        return customer
+        tenant = get_object_or_404(Tenant, pk=self.kwargs["id"])
+        return tenant
 
 
 class BaseYamlList(ListCreateAPIView):
-    serializer_class = CustomerSerializer
+    serializer_class = TenantSerializer
     # authentication_classes = (SessionAuthentication, BasicAuthentication)
     # permission_classes = (DjangoModelPermissions,)
     pagination_class = ListViewPagination
-    queryset = Customer.objects.all()
+    queryset = Tenant.objects.all()
 
     # def get_queryset(self):
-    #     customers = get_list_or_404(models.Customer)
-    #     return customers
+    #     tenants = get_list_or_404(models.Tenant)
+    #     return tenants

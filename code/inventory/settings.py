@@ -13,19 +13,27 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 import os
 import logging
 
+from django.contrib.messages import constants as messages
+from django.core.exceptions import ImproperlyConfigured
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+# Import configuration parameters
+try:
+    from . import configuration
+except ImportError:
+    raise ImproperlyConfigured(
+        "Configuration file is not present. Please define inventory/configuration.py"
+    )
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv("SECRET_KEY")
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv("DEBUG")
-
-ALLOWED_HOSTS = ['*']
+# Set required parameters
+ALLOWED_HOSTS = getattr(configuration, 'ALLOWED_HOSTS')
+DATABASES = getattr(configuration, 'DATABASES')
+SECRET_KEY = getattr(configuration, 'SECRET_KEY')
+DEBUG = getattr(configuration, 'DEBUG')
 
 # Application definition
 INSTALLED_APPS = [
@@ -47,7 +55,10 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.BasicAuthentication',
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.TokenAuthentication',
-    ]
+    ],
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
+    )
 }
 
 MIDDLEWARE = [
@@ -79,18 +90,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'inventory.wsgi.application'
-
-
-# Database
-# https://docs.djangoproject.com/en/2.2/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
-}
-
 
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators

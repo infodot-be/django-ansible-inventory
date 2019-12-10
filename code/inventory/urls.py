@@ -16,12 +16,12 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from django.conf.urls import url, include
+from inventory.views import HomeView
 from web import views
-
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     url(r'^api/', include('api.urls')),
     url(r'^web/', include('web.urls', namespace='web')),
-    url(r'^$', views.Indexview.as_view(), name='index'),
+    url(r'^$', HomeView.as_view(), name='home'),
 ]

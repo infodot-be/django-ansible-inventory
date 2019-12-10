@@ -17,6 +17,7 @@ python manage.py makemigrations
 python manage.py makemigrations api
 python manage.py migrate
 python manage.py collectstatic --no-input --clear
+python manage.py test -v2
 
 exec gunicorn inventory.wsgi:application --access-logfile - --error-logfile - --bind 0.0.0.0:8000 \
 "$@"

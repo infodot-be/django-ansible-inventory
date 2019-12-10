@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404
 # from django.views.decorators.cache import cache_page
-from .models import Customer, Group, System, System_yaml, Group_yaml, Customer_yaml
+from .models import Tenant, Group, System, System_yaml, Group_yaml, Tenant_yaml
 
 import yaml
 import logging
@@ -8,7 +8,7 @@ import logging
 
 class Ansible_inventory():
     def __init__(self, *args, **kwargs):
-        self.customer = kwargs['customer']
+        self.tenant = kwargs['tenant']
         # self.inventory = {}
         self.group_system = {}
         self.hostvars = {}
@@ -19,7 +19,7 @@ class Ansible_inventory():
 
         logger = logging.getLogger('Ansible_inventory')
         self.log = logger
-        self.log.debug("Ansible_inventory loaded for %s" % self.customer)
+        self.log.debug("Ansible_inventory loaded for %s" % self.tenant)
         pass
 
     def _process_group(self, org_group, system):
@@ -45,7 +45,10 @@ class Ansible_inventory():
 
     def _convert_yaml_to_dict(self, yaml_text):
         # data = {'ansible_ssh_user': 'vagrant'}
-        data = yaml.safe_load(yaml_text.rstrip())
+        if (yaml_text is not None):
+            data = yaml.safe_load(yaml_text.rstrip())
+        else:
+            data = dict()
         return data
 
     def _get_inventory(self, *args, **kwargs):
@@ -62,16 +65,16 @@ class Ansible_inventory():
             self.partial_inventory['all']['children'] = list()
             self.partial_inventory['all']['children'].append('ungrouped')
 
-        # Load Yaml from customer, this can be added to the all vars sinds this will be applicable on all.
-        if self.customer.yaml:
-            self.partial_inventory['all']['vars'] = self._convert_yaml_to_dict(self.customer.yaml.text.rstrip())
+        # Load Yaml from tenant, this can be added to the all vars sinds this will be applicable on all.
+        if self.tenant.yaml:
+            self.partial_inventory['all']['vars'] = self._convert_yaml_to_dict(self.tenant.yaml.text)
 
-        # Locate all systems for the customer
-        for system in System.objects.filter(customer=self.customer).distinct():
+        # Locate all systems for the tenant
+        for system in System.objects.filter(tenant=self.tenant).distinct():
             # Load Yaml from system and add this to the hostvars.
             self.hostvars[system.name] = dict()
             if system.yaml:
-                self.hostvars[system.name] = self._convert_yaml_to_dict(system.yaml.text.rstrip())
+                self.hostvars[system.name] = self._convert_yaml_to_dict(system.yaml.text)
 
             ungrouped = 1
             # Loop over the groups
@@ -105,15 +108,16 @@ class Ansible_inventory():
                     # self.partial_inventory[group.group_link.name] = dict()
                     self.partial_inventory[group.group_link.name]['children'] = self._process_group(group, system)
                     self.partial_inventory[group.group_link.name]['children'] = list(set(self.partial_inventory[group.group_link.name]['children']))
-                    # self.partial_inventory[group.group_link.name]['hosts'].append(self.group_system[group.name])
-                    # self.partial_inventory[group.group_link.name]['hosts'] = list(set(self.partial_inventory[group.group_link.name]['hosts']))
+                    self.partial_inventory[group.group_link.name]['hosts'].append(system.name)
+                    self.partial_inventory[group.group_link.name]['hosts'] = list(set(self.partial_inventory[group.group_link.name]['hosts']))  # Make unique
                 else:
                     self.log.debug("Normal Group %s" % (group.name))
 
                 self.partial_inventory[group.name]['hosts'].append(system.name)
                 self.partial_inventory[group.name]['hosts'] = list(set(self.partial_inventory[group.name]['hosts']))  # Make unique
-                self.partial_inventory['all']['hosts'].append(system.name)
-                self.partial_inventory['all']['hosts'] = list(set(self.partial_inventory['all']['hosts']))  # make unique
+                # self.partial_inventory['all']['hosts'].append(system.name)
+                # self.partial_inventory['all']['hosts'] = list(set(self.partial_inventory['all']['hosts']))  # make unique
+                self.partial_inventory['all']['children'] = list(set(self.partial_inventory['all']['children']))  # make unique
 
             if ungrouped:
                 self.ungrouped.append(system.name)

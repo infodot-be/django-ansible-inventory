@@ -10,3 +10,4 @@ flake8
 bandit
 mysqlclient
 pytest-django
+ansible

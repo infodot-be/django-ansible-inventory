@@ -25,6 +25,9 @@ before_install:
   - docker build --file $DOCKERFILE -t $IMAGE_NAME .
   - docker run -d -p 127.0.0.1:8000:8000 -e SECRET_KEY=${SECRET_KEY} --name compiled-docker $IMAGE_NAME
   - sleep 30
+  - docker exec compiled-docker python manage.py shell < code/populate_database.py
+  - sleep 5
+  - cd srcipts/ && ansible-inventory -i inventory.py --list
   - curl http://127.0.0.1:8000/api/
   - docker logs compiled-docker
   - docker ps -a
