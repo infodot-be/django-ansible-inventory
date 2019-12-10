@@ -27,7 +27,7 @@ before_install:
   - docker ps
   - sleep 30
   - docker logs compiled-docker
-  - docker exec compiled-docker python code/populate_database.py
+  - docker exec compiled-docker python populate_database.py || true ?
   - sleep 5
   - docker logs compiled-docker
   - ls -l scripts/inventory.py
