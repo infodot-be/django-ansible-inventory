@@ -24,6 +24,7 @@ before_install:
   - flake8 --ignore=E501,E722,F401 --exclude=migrations || true ?
   - docker build --file $DOCKERFILE -t $IMAGE_NAME .
   - docker run -d -p 127.0.0.1:8000:8000 -e SECRET_KEY=${SECRET_KEY} --name compiled-docker $IMAGE_NAME
+  - docker ps
   - sleep 30
   - docker logs compiled-docker
   - docker exec compiled-docker python manage.py shell < code/populate_database.py
@@ -34,7 +35,7 @@ before_install:
   - chmod +x scripts/inventory.py
   - python scripts/inventory.py || true ?
   - ansible-inventory -i scripts/inventory.py --list || true ?
-  - curl http://127.0.0.1:8000/api/ || true ?
+  - curl -v http://127.0.0.1:8000/api/ || true ?
   - docker logs compiled-docker
   - docker ps -a
 
