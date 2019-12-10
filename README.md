@@ -12,35 +12,36 @@ All objects are case sensitive in the current version.
 
 The inventory.py script available in the scripts directory will retrieve the information and format it for Ansible
 
-::
+```
+[]$ ansible-inventory -i inventory.py --list
+{
+    "Master": {
+        "hosts": [
+            "obiwan.example.com",
+            "yoda.example.com"
+        ]
+    },
+    "Padawan": {
+        "hosts": [
+            "anakin.example.com",
+            "luke.example.com"
+        ]
+    },
+    "_meta": {
+        "hostvars": {
+            "anakin.example.com": {},
+            "luke.example.com": {},
+            "obiwan.example.com": {},
+            "yoda.example.com": {}
+        }
+    },
+    "all": {
+        "children": [
+            "Master",
+            "Padawan",
+            "ungrouped"
+        ]
+    }
+}
 
-  []$ ansible-inventory -i inventory.py --list
-  {
-      "Master": {
-          "hosts": [
-              "obiwan.example.com",
-              "yoda.example.com"
-          ]
-      },
-      "Padawan": {
-          "hosts": [
-              "anakin.example.com",
-              "luke.example.com"
-          ]
-      },
-      "_meta": {
-          "hostvars": {
-              "anakin.example.com": {},
-              "luke.example.com": {},
-              "obiwan.example.com": {},
-              "yoda.example.com": {}
-          }
-      },
-      "all": {
-          "children": [
-              "Master",
-              "Padawan",
-              "ungrouped"
-          ]
-      }
-  }
+```

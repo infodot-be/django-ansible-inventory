@@ -1,4 +1,4 @@
-#!/bin/python3
+#!/usr/bin/env python
 import urllib.request
 customer = "Jedi"
 django_inventory_url = "http://127.0.0.1:8000/api/inventory/byname"

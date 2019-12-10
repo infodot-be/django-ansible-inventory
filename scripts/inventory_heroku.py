@@ -1,4 +1,4 @@
-#!/bin/python3
+#!/usr/bin/env python
 import urllib.request
 customer = "ir9_sto"
 django_inventory_url = "https://django-ipam.herokuapp.com/api/inventory/byname"
