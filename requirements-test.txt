@@ -10,4 +10,4 @@ flake8
 bandit
 mysqlclient
 pytest-django
-ansible
+ansible>=2.8,<2.9
